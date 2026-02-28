@@ -74,7 +74,7 @@ const Sidebar: React.FC = () => {
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
-          background: 'linear-gradient(180deg, #0A2463 0%, #1a237e 25%, #00BCD4 50%, #009688 75%, #7B1FA2 100%)',
+          background: 'linear-gradient(180deg, #0A2463 0%, #1a237e 25%, #0A2463 50%, #1a237e 75%)',
           color: 'white',
         },
       }}

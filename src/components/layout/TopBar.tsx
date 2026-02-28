@@ -15,12 +15,10 @@ const TopBar: React.FC = () => {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       }}
     >
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
-          Enterprise AI Dashboard
-        </Typography>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <img src="/logo_text.svg" alt="Logo" style={{ width: 'auto', height: 70 }} />
         {user && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
             <Typography variant="body2" color="text.secondary">
               Welcome, {user.username}
             </Typography>

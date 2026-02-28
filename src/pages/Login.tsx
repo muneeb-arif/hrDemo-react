@@ -53,6 +53,7 @@ const Login: React.FC = () => {
         <Card sx={{ width: '100%', maxWidth: 400 }}>
           <CardContent sx={{ p: 4 }}>
             <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <img src="/logo_text.svg" alt="Logo" style={{ width: 'auto', height: 170 }} />
               <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
                 Welcome Back
               </Typography>

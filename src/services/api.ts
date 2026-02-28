@@ -1,7 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
-import { API_BASE_URL, TOKEN_STORAGE_KEY } from '../utils/constants';
-import { store } from '../store';
-import { logout } from '../store/slices/authSlice';
+import { API_BASE_URL, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '../utils/constants';
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -26,13 +24,25 @@ api.interceptors.request.use(
 );
 
 // Response interceptor: Handle 401 errors (auto-logout)
+// Using lazy import to avoid circular dependency with store
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid - logout user
-      store.dispatch(logout());
-      // Redirect to login will be handled by ProtectedRoute
+      // Token expired or invalid - clear storage and dispatch logout
+      // Clear storage immediately
+      sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+      sessionStorage.removeItem(USER_STORAGE_KEY);
+      
+      // Lazy import to break circular dependency
+      try {
+        const { store } = await import('../store');
+        const { logout } = await import('../store/slices/authSlice');
+        store.dispatch(logout());
+      } catch (e) {
+        // If store is not available yet, storage is already cleared
+        // Redirect will be handled by ProtectedRoute
+      }
     }
     return Promise.reject(error);
   }
