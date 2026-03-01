@@ -7,29 +7,29 @@ interface FormattedTextProps {
 
 /**
  * Component to render text with markdown-like formatting:
- * - ### text -> h3 heading
+ * - ### text -> h6 heading with 1.25rem font size
  * - **text** -> bold text
  */
 const FormattedText: React.FC<FormattedTextProps> = ({ text }) => {
   const parseText = (input: string): React.ReactNode[] => {
     const parts: React.ReactNode[] = [];
 
-    // First, handle h3 headings (they should be on their own line)
+    // First, handle h6 headings (they should be on their own line)
     const lines = input.split('\n');
     
     lines.forEach((line, lineIndex) => {
-      const h3Match = line.match(/^###\s+(.+)$/);
+      const h6Match = line.match(/^###\s+(.+)$/);
       
-      if (h3Match) {
-        // Add h3 heading
+      if (h6Match) {
+        // Add h6 heading with 1.25rem font size
         parts.push(
           <Typography
-            key={`h3-${lineIndex}`}
-            variant="h3"
+            key={`h6-${lineIndex}`}
+            variant="h6"
             component="h6"
             sx={{ mt: lineIndex > 0 ? 2 : 0, mb: 1, fontWeight: 600, fontSize: '1.25rem' }}
           >
-            {h3Match[1]}
+            {h6Match[1]}
           </Typography>
         );
       } else if (line.trim()) {
@@ -80,7 +80,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({ text }) => {
         parts.push(
           <Typography
             key={`line-${lineIndex}`}
-            variant="body2"
+            variant="body1"
             component="p"
             sx={{ mb: 1, whiteSpace: 'pre-wrap' }}
           >
@@ -97,7 +97,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({ text }) => {
   };
 
   return (
-    <Box sx={{ fontFamily: '"Open Sans", sans-serif' }}>
+    <Box>
       {parseText(text)}
     </Box>
   );

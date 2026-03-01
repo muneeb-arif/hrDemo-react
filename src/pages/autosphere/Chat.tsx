@@ -21,18 +21,53 @@ import {
 } from '../../store/slices/autosphereSlice';
 import { autosphereApi } from '../../store/api/autosphereApi';
 import { ChatMessage } from '../../types';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorAlert from '../../components/common/ErrorAlert';
+import FormattedText from '../../components/common/FormattedText';
 
 const Chat: React.FC = () => {
   const dispatch = useAppDispatch();
   const { chat } = useAppSelector((state) => state.autosphere);
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [thinkingDots, setThinkingDots] = useState('');
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chat.messages]);
+  }, [chat.messages, chat.loading]);
+
+  // Animate thinking dots
+  useEffect(() => {
+    if (!chat.loading) {
+      setThinkingDots('');
+      return;
+    }
+
+    let dotCount = 0;
+    const interval = setInterval(() => {
+      dotCount = (dotCount + 1) % 4; // Cycle through 0, 1, 2, 3
+      setThinkingDots('.'.repeat(dotCount));
+    }, 500); // Change every 500ms
+
+    return () => clearInterval(interval);
+  }, [chat.loading]);
+
+  // Focus input field when loading completes (after response)
+  useEffect(() => {
+    if (!chat.loading && inputRef.current) {
+      // Small delay to ensure the DOM has updated
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [chat.loading]);
+
+  // Focus input field on initial mount
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const handleSend = async () => {
     if (!message.trim() || chat.loading) return;
@@ -153,9 +188,13 @@ const Chat: React.FC = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                    {msg.content}
-                  </Typography>
+                  {msg.role === 'assistant' ? (
+                    <FormattedText text={msg.content} />
+                  ) : (
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                      {msg.content}
+                    </Typography>
+                  )}
                 </Paper>
               </Box>
             </Box>
@@ -163,12 +202,20 @@ const Chat: React.FC = () => {
 
           {chat.loading && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, maxWidth: '70%' }}>
                 <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
                   <BotIcon fontSize="small" />
                 </Avatar>
-                <Paper sx={{ p: 2, bgcolor: 'grey.100', borderRadius: 2 }}>
-                  <CircularProgress size={20} />
+                <Paper 
+                  sx={{ 
+                    p: 2, 
+                    bgcolor: 'grey.100', 
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                    Thinking{thinkingDots}
+                  </Typography>
                 </Paper>
               </Box>
             </Box>
@@ -191,6 +238,7 @@ const Chat: React.FC = () => {
           )}
           <Box sx={{ display: 'flex', gap: 1 }}>
             <TextField
+              inputRef={inputRef}
               fullWidth
               multiline
               maxRows={4}

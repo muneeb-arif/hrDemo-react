@@ -43,7 +43,10 @@ const autosphereSlice = createSlice({
     },
     setChatError: (state, action: PayloadAction<string | null>) => {
       state.chat.error = action.payload;
-      state.chat.loading = false;
+      // Only set loading to false when setting an error, not when clearing it
+      if (action.payload !== null) {
+        state.chat.loading = false;
+      }
     },
     setBookingFlow: (state, action: PayloadAction<boolean>) => {
       state.chat.bookingFlow = action.payload;
