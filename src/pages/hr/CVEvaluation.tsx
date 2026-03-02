@@ -209,6 +209,28 @@ const CVEvaluation: React.FC = () => {
             </Grid>
           </Grid>
 
+          {/* Evaluated Skills List */}
+          {results.results.length > 0 && results.results[0].skills && results.results[0].skills.length > 0 && (
+            <Card sx={{ mb: 4 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                  Evaluated Skills
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {results.results[0].skills.map((skill, index) => (
+                    <Chip
+                      key={index}
+                      label={skill}
+                      color="primary"
+                      variant="outlined"
+                      sx={{ fontWeight: 500 }}
+                    />
+                  ))}
+                </Box>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Top 5 Candidates List */}
           <Card sx={{ mb: 4 }}>
             <CardContent>
@@ -428,6 +450,41 @@ const CVEvaluation: React.FC = () => {
                         )}
                       </Box>
                     </Box>
+
+                    {/* Skill Scores Breakdown */}
+                    {Object.keys(result.skill_scores).length > 0 && (
+                      <Box sx={{ mt: 3, mb: 2 }}>
+                        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                          Skill Scores Breakdown:
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                          {Object.entries(result.skill_scores).map(([skill, score]) => {
+                            const skillScoreColor = score >= 80 ? 'success' : score >= 60 ? 'warning' : 'error';
+                            return (
+                              <Box key={skill}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                    {skill}
+                                  </Typography>
+                                  <Chip
+                                    label={`${score.toFixed(1)}%`}
+                                    color={skillScoreColor}
+                                    size="small"
+                                    sx={{ fontWeight: 600, minWidth: '60px' }}
+                                  />
+                                </Box>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={score}
+                                  color={skillScoreColor}
+                                  sx={{ height: 6, borderRadius: 3 }}
+                                />
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      </Box>
+                    )}
 
                     <Box sx={{ mb: 2 }}>
                       <LinearProgress

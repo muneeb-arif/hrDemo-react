@@ -46,6 +46,7 @@ export interface CVResult {
   skill_scores: Record<string, number>;
   skill_status: SkillStatus;
   hire_recommendation: HireRecommendation;
+  skills?: string[];
 }
 
 export interface CVEvaluationResponse {
