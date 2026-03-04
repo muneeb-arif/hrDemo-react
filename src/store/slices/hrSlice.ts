@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { CVEvaluationResponse, PolicyQuestionResponse, TechnicalQuestionResponse, TechnicalAnswerEvaluateResponse } from '../../types';
+import { CVEvaluationResponse, TechnicalAnswerEvaluateResponse } from '../../types';
 
 interface HRState {
   cvEvaluation: {
@@ -8,8 +8,7 @@ interface HRState {
     error: string | null;
   };
   policy: {
-    question: string | null;
-    answer: string | null;
+    qaHistory: Array<{ question: string; answer: string }>;
     loading: boolean;
     error: string | null;
   };
@@ -28,8 +27,7 @@ const initialState: HRState = {
     error: null,
   },
   policy: {
-    question: null,
-    answer: null,
+    qaHistory: [],
     loading: false,
     error: null,
   },
@@ -57,11 +55,8 @@ const hrSlice = createSlice({
       state.cvEvaluation.error = action.payload;
       state.cvEvaluation.loading = false;
     },
-    setPolicyQuestion: (state, action: PayloadAction<string>) => {
-      state.policy.question = action.payload;
-    },
-    setPolicyAnswer: (state, action: PayloadAction<string>) => {
-      state.policy.answer = action.payload;
+    addPolicyQA: (state, action: PayloadAction<{ question: string; answer: string }>) => {
+      state.policy.qaHistory.unshift(action.payload); // Prepend to beginning (newest first)
       state.policy.loading = false;
       state.policy.error = null;
     },
@@ -89,7 +84,7 @@ const hrSlice = createSlice({
       state.technical.error = action.payload;
       state.technical.loading = false;
     },
-    clearHRState: (state) => {
+    clearHRState: () => {
       return initialState;
     },
   },
@@ -99,8 +94,7 @@ export const {
   setCVEvaluationLoading,
   setCVEvaluationResults,
   setCVEvaluationError,
-  setPolicyQuestion,
-  setPolicyAnswer,
+  addPolicyQA,
   setPolicyLoading,
   setPolicyError,
   setTechnicalQuestions,

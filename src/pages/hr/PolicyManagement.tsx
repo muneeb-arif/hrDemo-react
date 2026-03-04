@@ -14,9 +14,8 @@ import { CloudUpload as CloudUploadIcon, Send as SendIcon } from '@mui/icons-mat
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   setPolicyLoading,
-  setPolicyAnswer,
+  addPolicyQA,
   setPolicyError,
-  setPolicyQuestion,
 } from '../../store/slices/hrSlice';
 import { hrApi } from '../../store/api/hrApi';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -25,12 +24,9 @@ import ErrorAlert from '../../components/common/ErrorAlert';
 const PolicyManagement: React.FC = () => {
   const dispatch = useAppDispatch();
   const { policy } = useAppSelector((state) => state.hr);
-  const { user } = useAppSelector((state) => state.auth);
   const [question, setQuestion] = useState('');
   const [policyFiles, setPolicyFiles] = useState<File[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-
-  const isHRManager = user?.role === 'HR Manager';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -79,14 +75,20 @@ const PolicyManagement: React.FC = () => {
       return;
     }
 
+    const currentQuestion = question.trim();
     dispatch(setPolicyLoading(true));
-    dispatch(setPolicyQuestion(question));
 
     try {
-      const response = await hrApi.askPolicyQuestion({ question });
+      const response = await hrApi.askPolicyQuestion({ question: currentQuestion });
 
       if (response.success && response.data) {
-        dispatch(setPolicyAnswer(response.data.answer));
+        // Add Q&A pair to history (prepended, so newest first)
+        dispatch(addPolicyQA({
+          question: currentQuestion,
+          answer: response.data.answer,
+        }));
+        // Clear the input field
+        setQuestion('');
       } else {
         dispatch(setPolicyError(response.message || 'Failed to get answer'));
       }
@@ -107,15 +109,14 @@ const PolicyManagement: React.FC = () => {
         Policy Management
       </Typography>
 
-      {isHRManager && (
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Upload Policy Documents
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Upload PDF policy documents to make them available for AI-powered question answering.
-            </Typography>
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Upload Policy Documents
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Upload PDF policy documents to make them available for AI-powered question answering.
+          </Typography>
             <Box>
               <input
                 accept=".pdf"
@@ -158,7 +159,6 @@ const PolicyManagement: React.FC = () => {
             )}
           </CardContent>
         </Card>
-      )}
 
       <Divider sx={{ my: 4 }} />
 
@@ -198,15 +198,25 @@ const PolicyManagement: React.FC = () => {
         <ErrorAlert message={policy.error} onClose={() => dispatch(setPolicyError(''))} />
       )}
 
-      {policy.answer && (
-        <Paper sx={{ p: 3, mt: 3, backgroundColor: '#f5f5f5' }}>
-          <Typography variant="h6" gutterBottom>
-            Answer
-          </Typography>
-          <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-            {policy.answer}
-          </Typography>
-        </Paper>
+      {policy.qaHistory.length > 0 && (
+        <Box sx={{ mt: 3 }}>
+          {policy.qaHistory.map((qa, index) => (
+            <Paper key={index} sx={{ p: 3, mb: 3, backgroundColor: '#f5f5f5' }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
+                Question
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>
+                {qa.question}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: 'text.primary', mt: 2 }}>
+                Answer
+              </Typography>
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                {qa.answer}
+              </Typography>
+            </Paper>
+          ))}
+        </Box>
       )}
     </Box>
   );
