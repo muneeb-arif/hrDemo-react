@@ -19,7 +19,6 @@ import {
   Tab,
   Chip,
   Alert,
-  Divider,
 } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -28,7 +27,6 @@ import {
   setBookingsLoading,
   setBookingsError,
   addBooking,
-  setSelectedBooking,
 } from '../../store/slices/autosphereSlice';
 import { autosphereApi } from '../../store/api/autosphereApi';
 import { BookingCreate } from '../../types';
