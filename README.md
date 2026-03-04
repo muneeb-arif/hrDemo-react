@@ -252,7 +252,7 @@ The `vite.config.ts` file includes:
 Key configuration options:
 - **Server Port**: 3000 (configurable)
 - **API Proxy**: Automatically proxies `/api` requests to backend
-- **Build Output**: `build/` directory
+- **Build Output**: `dist/` directory
 - **Manual Chunks**: Vendor, MUI, and Redux are split into separate chunks
 
 ### TypeScript Configuration
@@ -692,7 +692,7 @@ Edit `src/utils/theme.ts`:
 yarn build
 ```
 
-This creates an optimized production build in the `build/` directory.
+This creates an optimized production build in the `dist/` directory.
 
 **Build Process**:
 1. TypeScript compilation (`tsc`)
@@ -719,7 +719,7 @@ The build process:
 - Optimizes assets (images, fonts, etc.)
 - Generates source maps (for debugging)
 - Creates optimized chunks for better caching
-- Outputs to `build/` directory
+- Outputs to `dist/` directory
 
 **Vite Build Features**:
 - ⚡ Faster builds compared to Create React App
