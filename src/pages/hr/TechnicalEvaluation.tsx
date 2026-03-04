@@ -7,15 +7,11 @@ import {
   TextField,
   Button,
   Paper,
-  Stepper,
-  Step,
-  StepLabel,
   Grid,
   Chip,
   LinearProgress,
-  Alert,
 } from '@mui/material';
-import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
+import { Link as LinkIcon } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   setTechnicalLoading,
@@ -26,21 +22,21 @@ import {
 import { hrApi } from '../../store/api/hrApi';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorAlert from '../../components/common/ErrorAlert';
-
-const steps = ['Generate Questions', 'Evaluate Answers'];
+import DragDropFileUpload from '../../components/common/DragDropFileUpload';
 
 const TechnicalEvaluation: React.FC = () => {
   const dispatch = useAppDispatch();
   const { technical } = useAppSelector((state) => state.hr);
-  const [activeStep, setActiveStep] = useState(0);
   const [jobDescription, setJobDescription] = useState('');
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [answers, setAnswers] = useState<string[]>([]);
 
-  const handleCvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setCvFile(e.target.files[0]);
-    }
+  const handleFileSelect = (file: File) => {
+    setCvFile(file);
+  };
+
+  const handleFileRemove = () => {
+    setCvFile(null);
   };
 
   const handleGenerateQuestions = async () => {
@@ -66,7 +62,6 @@ const TechnicalEvaluation: React.FC = () => {
       if (response.success && response.data) {
         dispatch(setTechnicalQuestions(response.data.questions));
         setAnswers(new Array(response.data.questions.length).fill(''));
-        setActiveStep(1);
       } else {
         dispatch(setTechnicalError(response.message || 'Failed to generate questions'));
       }
@@ -130,78 +125,54 @@ const TechnicalEvaluation: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, mb: 4 }}>
-        Technical Evaluation
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 4 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
+          Technical Assessment for Candidate
+        </Typography>
+        <LinkIcon sx={{ color: 'text.secondary' }} />
+      </Box>
 
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-
-      {activeStep === 0 && (
+      {technical.questions.length === 0 && (
         <Card>
           <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Step 1: Generate Technical Questions
-            </Typography>
+            <Box sx={{ mb: 3 }}>
+              <DragDropFileUpload
+                accept=".pdf,.doc,.docx"
+                maxSizeMB={200}
+                onFileSelect={handleFileSelect}
+                onFileRemove={handleFileRemove}
+                selectedFile={cvFile}
+                disabled={technical.loading}
+              />
+            </Box>
             <TextField
               fullWidth
               multiline
               rows={6}
-              label="Job Description"
+              label="Paste Job Description"
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Enter the job description here..."
               sx={{ mb: 3 }}
             />
-            <Box>
-              <input
-                accept=".pdf,.doc,.docx"
-                style={{ display: 'none' }}
-                id="cv-upload"
-                type="file"
-                onChange={handleCvFileChange}
-              />
-              <label htmlFor="cv-upload">
-                <Button
-                  variant="outlined"
-                  component="span"
-                  startIcon={<CloudUploadIcon />}
-                  sx={{ mb: 2 }}
-                >
-                  Upload CV File (PDF/DOCX)
-                </Button>
-              </label>
-              {cvFile && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Selected: {cvFile.name}
-                  </Typography>
-                </Box>
-              )}
-            </Box>
             <Button
               variant="contained"
               onClick={handleGenerateQuestions}
               disabled={technical.loading || !jobDescription.trim() || !cvFile}
-              sx={{ mt: 2 }}
+              size="large"
             >
-              {technical.loading ? 'Generating...' : 'Generate Questions'}
+              {technical.loading ? 'Generating...' : 'Generate Technical Questions'}
             </Button>
           </CardContent>
         </Card>
       )}
 
-      {activeStep === 1 && technical.questions.length > 0 && (
+      {technical.questions.length > 0 && (
         <Box>
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Step 2: Evaluate Answers
+                Evaluate Answers
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 Provide answers to the generated questions. Each question is worth 20 points.
@@ -226,6 +197,7 @@ const TechnicalEvaluation: React.FC = () => {
                 variant="contained"
                 onClick={handleEvaluateAnswers}
                 disabled={technical.loading || answers.some((answer) => !answer.trim())}
+                size="large"
                 sx={{ mt: 2 }}
               >
                 {technical.loading ? 'Evaluating...' : 'Evaluate Answers'}

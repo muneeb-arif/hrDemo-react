@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAppSelector } from './store/hooks';
 import Login from './pages/Login';
@@ -6,8 +5,7 @@ import Dashboard from './pages/Dashboard';
 import CVEvaluation from './pages/hr/CVEvaluation';
 import PolicyManagement from './pages/hr/PolicyManagement';
 import TechnicalEvaluation from './pages/hr/TechnicalEvaluation';
-import Chat from './pages/autosphere/Chat';
-import Bookings from './pages/autosphere/Bookings';
+import AutoSphere from './pages/autosphere/AutoSphere';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import Layout from './components/layout/Layout';
 
@@ -36,8 +34,7 @@ function App() {
           <Route path="technical" element={<TechnicalEvaluation />} />
         </Route>
         <Route path="autosphere">
-          <Route path="chat" element={<Chat />} />
-          <Route path="bookings" element={<Bookings />} />
+          <Route index element={<AutoSphere />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

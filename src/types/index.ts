@@ -79,6 +79,11 @@ export interface TechnicalQuestionResponse {
   questions: string[];
 }
 
+export interface TechnicalAnswerEvaluateRequest {
+  questions: string[];
+  answers: string[];
+}
+
 export interface QuestionEvaluation {
   question_number: number;
   question: string;

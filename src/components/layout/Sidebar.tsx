@@ -19,7 +19,6 @@ import {
   Policy as PolicyIcon,
   Quiz as QuizIcon,
   Chat as ChatIcon,
-  BookOnline as BookOnlineIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
@@ -39,9 +38,8 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
   { label: 'CV Evaluation', path: '/hr/cv-evaluation', icon: <DescriptionIcon /> },
   { label: 'Policy Management', path: '/hr/policy', icon: <PolicyIcon />, roles: ['HR Manager'] },
-  { label: 'Technical Evaluation', path: '/hr/technical', icon: <QuizIcon />, roles: ['HR Manager'] },
-  { label: 'AI Chat', path: '/autosphere/chat', icon: <ChatIcon /> },
-  { label: 'Bookings', path: '/autosphere/bookings', icon: <BookOnlineIcon /> },
+  { label: 'Technical Evaluation', path: '/hr/technical', icon: <QuizIcon /> },
+  { label: 'AutoSphere Motors', path: '/autosphere', icon: <ChatIcon /> },
 ];
 
 const Sidebar: React.FC = () => {

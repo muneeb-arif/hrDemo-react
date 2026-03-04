@@ -6,7 +6,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardActions,
   Button,
 } from '@mui/material';
 import {
@@ -14,7 +13,6 @@ import {
   Policy as PolicyIcon,
   Quiz as QuizIcon,
   Chat as ChatIcon,
-  BookOnline as BookOnlineIcon,
 } from '@mui/icons-material';
 import { useAppSelector } from '../store/hooks';
 
@@ -29,8 +27,8 @@ const Dashboard: React.FC = () => {
       icon: <DescriptionIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
       items: [
         { label: 'CV Evaluation', path: '/hr/cv-evaluation', icon: <DescriptionIcon /> },
-        { label: 'Policy Management', path: '/hr/policy', icon: <PolicyIcon />, roles: ['HR Manager'] },
-        { label: 'Technical Evaluation', path: '/hr/technical', icon: <QuizIcon />, roles: ['HR Manager'] },
+        { label: 'Policy Management', path: '/hr/policy', icon: <PolicyIcon /> },
+        { label: 'Technical Evaluation', path: '/hr/technical', icon: <QuizIcon /> },
       ],
     },
     {
@@ -38,8 +36,7 @@ const Dashboard: React.FC = () => {
       description: 'AI Assistant and Booking Management',
       icon: <ChatIcon sx={{ fontSize: 48, color: 'secondary.main' }} />,
       items: [
-        { label: 'AI Chat', path: '/autosphere/chat', icon: <ChatIcon /> },
-        { label: 'Bookings', path: '/autosphere/bookings', icon: <BookOnlineIcon /> },
+        { label: 'AutoSphere Motors', path: '/autosphere', icon: <ChatIcon /> },
       ],
     },
   ];
@@ -47,7 +44,7 @@ const Dashboard: React.FC = () => {
   const filteredCards = navigationCards.map((card) => ({
     ...card,
     items: card.items.filter(
-      (item) => !item.roles || (user && item.roles.includes(user.role))
+      (item: any) => !item.roles || (user && item.roles.includes(user.role))
     ),
   }));
 
